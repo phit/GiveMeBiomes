@@ -1,0 +1,148 @@
+<html>
+<head>
+	<title>Give Me Biomes</title>
+	<style>
+		body {
+			text-align: center;
+			font-family: "Arial", sans-serif;
+		}
+
+		div	{
+			margin: 0px;
+			padding: 0px;
+		}
+
+		img	{
+			display: inline-block;
+			margin: 0;
+			padding: 0;
+		}
+
+		#tooltip {
+			position: absolute;
+			display: none;
+			padding: 5px;
+			background-color: rgba(0,0,0,0.5);
+			color: #fff;
+		}
+	</style>
+	<script type="text/javascript" src="data/mapinfo.json"></script>
+	<script type="text/javascript" src="data/biomeids.json"></script>
+	<script type="text/javascript">
+		function relMouseCoords(element, event)
+		{
+			var totalOffsetX = 0;
+			var totalOffsetY = 0;
+			var clickX = 0;
+			var clickY = 0;
+			var currentElement = element;
+
+			do{
+				totalOffsetX += currentElement.offsetLeft;
+				totalOffsetY += currentElement.offsetTop;
+			}
+			while(currentElement = currentElement.offsetParent)
+
+			clickX = event.pageX - totalOffsetX;
+			clickY = event.pageY - totalOffsetY;
+
+			return {x:clickX, y:clickY}
+		}
+
+		var tilesize = mapinfo.tileSize;
+		var xtiles = mapinfo.tilesx;
+		var ytiles = mapinfo.tilesy;
+		var originx = mapinfo.originx;
+		var originy = mapinfo.originy;
+		var scale = mapinfo.scale;
+
+		var mapdata = new Array();
+
+		function addMapData() {
+			for ( var y=0; y<ytiles; y++ ) {
+				for ( var x=0; x<xtiles; x++ ) {
+					var dscript = document.createElement("script");
+					dscript.type = "text/javascript";
+					dscript.src = "data/tile_"+x+"_"+y+".json";
+					document.body.appendChild(dscript);
+				}
+			}
+		}
+
+		function showmap() {
+			console.log(mapdata);
+
+			var map = document.getElementById("map");
+			map.innerHTML = "";
+
+			for (var y = 0; y<ytiles; y++) {
+				var row = document.createElement("div");
+				row.style.width = xtiles*tilesize +"px";
+				row.style.height = tilesize+"px";
+				row.style.overflow = "hidden";
+				map.appendChild(row);
+
+				for (var x = 0; x<xtiles; x++) {
+					var img = document.createElement("img");
+					img.src = "data/tile_"+x+"_"+y+".png";
+					row.appendChild(img);
+					img.tilex = x;
+					img.tiley = y;
+
+					img.onmousemove = function(e) {
+						var coords = relMouseCoords(this,e);
+						var biome = getBiomeOnTile(this.tilex, this.tiley, coords.x, coords.y);
+						var mapx = this.tilex*tilesize*scale + coords.x*scale + originx;
+						var mapy = this.tiley*tilesize*scale + coords.y*scale + originy;
+						showTooltip(e.pageX, e.pageY, biome +"<br/>"+mapx+","+mapy);
+					}
+
+					img.onmouseout = function(e) {
+						hideTooltip();
+					}
+				}
+			}
+			//rescale(0.2);
+		}
+
+		function rescale(scale) {
+			var map = document.getElementById("map");
+			var container = document.getElementById("container");
+			container.style.overflow = "hidden";
+			container.style.width = Math.round(tilesize*xtiles*scale) +"px";
+			container.style.height = Math.round(tilesize*ytiles*scale) +"px";
+
+			map.style.webkitTransformOrigin = "top left";
+			map.style.webkitTransform = "scale("+scale+","+scale+")";
+		}
+
+		function getBiomeOnTile(tilex,tiley,x,y) {
+			var tiledata = mapdata["tile_"+tilex+"_"+tiley];
+			var id = tiledata[y*tilesize + x];
+			return biomeids[id];
+		}
+
+		function showTooltip(x,y,content) {
+			var t = document.getElementById("tooltip");
+			t.style.display = "block";
+			t.style.top = (y+15)+"px";
+			t.style.left = (x+15)+"px";
+			t.innerHTML = content;
+		}
+
+		function hideTooltip() {
+			document.getElementById("tooltip").style.display = "none";
+		}
+	</script>
+
+</head>
+<body onload="showmap()">
+	<script type="text/javascript">
+		addMapData();
+	</script>
+	<div id="tooltip"></div>
+	<div id="container">
+		<div id="map"></div>
+	</div>
+</body>
+</html>
