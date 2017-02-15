@@ -36,7 +36,7 @@ public class BiomeColors {
                 color = 8421631;
                 break;
             case "FrozenOcean":
-                color = 9474208;
+                color = 10526975;
                 break;
             case "FrozenRiver":
                 color = 10526975;
@@ -190,6 +190,196 @@ public class BiomeColors {
                 break;
             case "Mesa Plateau M":
                 color = 14838814;
+                break;
+            // Biome's O Plenty 5
+            case "Gravel Beach":
+                color = 10326654;
+                break;
+            case "Alps":
+                color = 6851218;
+                break;
+            case "Bamboo Forest":
+                color = 6853246;
+                break;
+            case "Bayou":
+                color = 3229222;
+                break;
+            case "Bog":
+                color = 7033409;
+                break;
+            case "Boreal Forest":
+                color = 10467185;
+                break;
+            case "Brushland":
+                color = 13222271;
+                break;
+            case "Chaparral":
+                color = 12638301;
+                break;
+            case "Cherry Blossom Grove":
+                color = 16289679;
+                break;
+            case "Cold Desert":
+                color = 12373377;
+                break;
+            case "Coniferous Forest":
+                color = 5410656;
+                break;
+            case "Crag":
+                color = 5209457;
+                break;
+            case "Dead Forest":
+                color = 12362085;
+                break;
+            case "Dead Swamp":
+                color = 9154376;
+                break;
+            case "Eucalyptus Forest":
+                color = 5163857;
+                break;
+            case "Fen":
+                color = 5396281;
+                break;
+            case "Flower Field":
+                color = 4044093;
+                break;
+            case "Grassland":
+                color = 8379261;
+                break;
+            case "Grove":
+                color = 5341009;
+                break;
+            case "Heathland":
+                color = 13550967;
+                break;
+            case "Highland":
+                color = 8170854;
+                break;
+            case "Land of Lakes":
+                color = 0;
+                break;
+            case "Lavender Fields":
+                color = 11035852;
+                break;
+            case "Lush Desert":
+                color = 9087277;
+                break;
+            case "Lush Swamp":
+                color = 5746228;
+                break;
+            case "Maple Woods":
+                color = 6988649;
+                break;
+            case "Marsh":
+                color = 6725742;
+                break;
+            case "Meadow":
+                color = 6533741;
+                break;
+            case "Moor":
+                color = 6394725;
+                break;
+            case "Mountain Peaks":
+                color = 8430421;
+                break;
+            case "Mystic Grove":
+                color = 6934491;
+                break;
+            case "Ominous Woods":
+                color = 4145489;
+                break;
+            case "Orchard":
+                color = 14024557;
+                break;
+            case "Outback":
+                color = 10843716;
+                break;
+            case "Overgrown Cliffs":
+                color = 0;
+                break;
+            case "Prairie":
+                color = 13165952;
+                break;
+            case "Quagmire":
+                color = 5257771;
+                break;
+            case "Rainforest":
+                color = 1368687;
+                break;
+            case "Redwood Forest":
+                color = 7187004;
+                break;
+            case "Sacred Springs":
+                color = 39259;
+                break;
+            case "Seasonal Forest":
+                color = 12502092;
+                break;
+            case "Shield":
+                color = 6586168;
+                break;
+            case "Shrubland":
+                color = 8168286;
+                break;
+            case "Snowy Coniferous Forest":
+                color = 10346906;
+                break;
+            case "Snowy Forest":
+                color = 10346906;
+                break;
+            case "Steppe":
+                color = 13413215;
+                break;
+            case "Temperate Rainforest":
+                color = 12311907;
+                break;
+            case "Tropical Rainforest":
+                color = 8970560;
+                break;
+            case "Tundra":
+                color = 11371606;
+                break;
+            case "Wasteland":
+                color = 5919808;
+                break;
+            case "Wetland":
+                color = 5215831;
+                break;
+            case "Woodland":
+                color = 8694061;
+                break;
+            case "Xeric Shrubland":
+                color = 11445290;
+                break;
+            case "Mountain Foothills":
+                color = 7835261;
+                break;
+            case "Glacier":
+                color = 14546939;
+                break;
+            case "Oasis":
+                color = 7712283;
+                break;
+            case "Coral Reef":
+                color = 18285;
+                break;
+            case "Kelp Forest":
+                color = 27468;
+                break;
+            case "Mangrove":
+                color = 7251289;
+                break;
+            case "Origin Island":
+                color = 10341485;
+                break;
+            case "Tropical Island":
+                color = 16764971;
+                break;
+            case "Volcanic Island":
+                color = 12005410;
+                break;
+            case "Flower Island":
+                color = 4438851;
                 break;
             default: // do nothing;
                 break;

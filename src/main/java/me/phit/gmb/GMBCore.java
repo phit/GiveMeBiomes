@@ -71,7 +71,7 @@ public class GMBCore {
             }
         }
         putViewer(path);
-        ITextComponent itextcomponent = new TextComponentString("Success! Click here to open your map" + "\"" + mapname + "\"");
+        ITextComponent itextcomponent = new TextComponentString("Success! Click here to open your map " + "\"" + mapname + "\"");
         itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.getAbsolutePath() + File.separator + "GMBViewer.htm"));
         icommandsender.sendMessage(itextcomponent);
     }
