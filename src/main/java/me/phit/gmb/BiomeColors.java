@@ -36,10 +36,10 @@ public class BiomeColors {
                 color = 8421631;
                 break;
             case "FrozenOcean":
-                color = 10526975;
+                color = 8762367;
                 break;
             case "FrozenRiver":
-                color = 10526975;
+                color = 8892927;
                 break;
             case "Ice Plains":
                 color = 16777215;
@@ -256,7 +256,7 @@ public class BiomeColors {
                 color = 8170854;
                 break;
             case "Land of Lakes":
-                color = 0;
+                color = 6794611;
                 break;
             case "Lavender Fields":
                 color = 11035852;
@@ -295,7 +295,7 @@ public class BiomeColors {
                 color = 10843716;
                 break;
             case "Overgrown Cliffs":
-                color = 0;
+                color = 6852444;
                 break;
             case "Prairie":
                 color = 13165952;
@@ -376,7 +376,7 @@ public class BiomeColors {
                 color = 16764971;
                 break;
             case "Volcanic Island":
-                color = 12005410;
+                color = 6645093;
                 break;
             case "Flower Island":
                 color = 4438851;
