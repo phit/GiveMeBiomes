@@ -92,8 +92,8 @@
 					img.onmousemove = function(e) {
 						var coords = relMouseCoords(this,e);
 						var biome = getBiomeOnTile(this.tilex, this.tiley, coords.x, coords.y);
-						var mapx = this.tilex*tilesize*scale + coords.x*scale + originx;
-						var mapy = this.tiley*tilesize*scale + coords.y*scale + originy;
+						var mapx = (this.tilex*tilesize*scale + coords.x*scale + originx) * 4;
+						var mapy = (this.tiley*tilesize*scale + coords.y*scale + originy) * 4;
 						showTooltip(e.pageX, e.pageY, biome +"<br/>"+mapx+","+mapy);
 					}
 
