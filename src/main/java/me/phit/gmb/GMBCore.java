@@ -1,34 +1,25 @@
 package me.phit.gmb;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.io.FileUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
+import java.io.*;
 import java.util.Iterator;
+import javax.imageio.ImageIO;
+import com.google.common.io.ByteSink;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.apache.commons.io.FilenameUtils;
 
 import static me.phit.gmb.BiomeColors.getMapColor;
 
 public class GMBCore {
 
-    public GMBCore() {
-    }
-
-    @SideOnly(Side.CLIENT)
     public static void generate(BiomeProvider manager, String mapname, int scale, int originx, int originz, int width, int height, ICommandSender icommandsender) {
         int imagesx = (int)Math.ceil((double)width / (128.0D * (double)scale));
         int imagesy = (int)Math.ceil((double)height / (128.0D * (double)scale));
@@ -53,30 +44,29 @@ public class GMBCore {
             colours.write("mapinfo = " + info.toString());
             colours.flush();
             colours.close();
-        } catch (IOException var18) {
-            var18.printStackTrace();
+        } catch (IOException err) {
+            Logging.logError("Couldn\'t write mapinfo.json!", err);
         }
 
-        int[] var19 = generateLists(datapath);
+        int[] colours = generateLists(datapath);
         icommandsender.sendMessage(new TextComponentString("Beginning render of " + imagesx * imagesy + " tiles covering a " + width + " by " + height + " block area."));
 
         for(int y = 0; y < imagesy; ++y) {
             for(int x = 0; x < imagesx; ++x) {
-                generateTile(manager, var19, scale, originx + x * 128 * scale, originz + y * 128 * scale, 128, 128, datapath, "tile_" + x + "_" + y);
+                generateTile(manager, colours, scale, originx + x * 128 * scale, originz + y * 128 * scale, 128, 128, datapath, "tile_" + x + "_" + y);
                 progress = (double)(y * imagesx + x) / (double)(imagesx * imagesy) * 100.0D;
                 if(Math.floor(progress) > (double)lastpercent) {
                     lastpercent = (int)Math.floor(progress);
-                    System.out.println("Progress: " + lastpercent + "%");
+                    Logging.logInfo("Progress: " + lastpercent + "%");
                 }
             }
         }
         putViewer(path);
         ITextComponent itextcomponent = new TextComponentString("Success! Click here to open your map " + "\"" + mapname + "\"");
-        itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.getAbsolutePath() + File.separator + "GMBViewer.htm"));
+        itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, FilenameUtils.normalize(path.getAbsolutePath() + File.separator + "GMBViewer.htm")));
         icommandsender.sendMessage(itextcomponent);
     }
 
-    @SideOnly(Side.CLIENT)
     private static void generateTile(BiomeProvider manager, int[] colours, int scale, int originx, int originz, int width, int height, File path, String name) {
         int[] pixels = new int[width * height];
         int[] biomeids = new int[width * height];
@@ -90,28 +80,27 @@ public class GMBCore {
             }
         }
 
-        BufferedImage var17 = new BufferedImage(width, height, 1);
-        var17.setRGB(0, 0, width, height, pixels, 0, width);
-        String var18 = (new Gson()).toJson(biomeids);
+        BufferedImage img = new BufferedImage(width, height, 1);
+        img.setRGB(0, 0, width, height, pixels, 0, width);
+        String biomeidsjson = (new Gson()).toJson(biomeids);
 
         try {
-            ImageIO.write(var17, "png", new File(path, name + ".png"));
-        } catch (IOException var16) {
-            System.out.println("Image save failed");
+            ImageIO.write(img, "png", new File(path, name + ".png"));
+        } catch (IOException err) {
+            Logging.logError("Image save failed", err);
         }
 
         try {
-            FileWriter var19 = new FileWriter(new File(path, name + ".json"));
-            var19.write("mapdata[\'" + name + "\'] = " + var18 + ";");
-            var19.flush();
-            var19.close();
-        } catch (IOException var15) {
-            var15.printStackTrace();
+            FileWriter idsfile = new FileWriter(new File(path, name + ".json"));
+            idsfile.write("mapdata[\'" + name + "\'] = " + biomeidsjson + ";");
+            idsfile.flush();
+            idsfile.close();
+        } catch (IOException err) {
+            Logging.logError("Couldn\'t write mapdata json for tile" + name, err);
         }
 
     }
 
-    @SideOnly(Side.CLIENT)
     private static int[] generateLists(File path) {
         int[] clist = new int[512];
         String[] namelist = new String[512];
@@ -129,7 +118,7 @@ public class GMBCore {
             namelist[id] = name;
         }
 
-        String var7 = (new Gson()).toJson(namelist);
+        String namelistjson = (new Gson()).toJson(namelist);
         if(!path.exists()) {
             path.mkdirs();
         }
@@ -138,24 +127,31 @@ public class GMBCore {
 
         try {
             FileWriter e = new FileWriter(filepath);
-            e.write("biomeids = " + var7);
+            e.write("biomeids = " + namelistjson);
             e.flush();
             e.close();
-        } catch (IOException var6) {
-            var6.printStackTrace();
+        } catch (IOException err) {
+            Logging.logError("Couldn\'t write biomeids.json", err);
+            return null;
         }
-
         return clist;
     }
 
-    @SideOnly(Side.CLIENT)
-    private static void putViewer(File path) {
-        URL input = Minecraft.getMinecraft().getClass().getResource("/assets/givemebiomes/GMBViewer.htm");
-
+    public static File putViewer(File path) {
         try {
-            FileUtils.copyURLToFile(input, new File(path, "GMBViewer.htm"));
-        } catch (IOException var3) {
-            var3.printStackTrace();
+            final File t = new File(path, "GMBViewer.htm");
+            String htmlPath = "/assets/givemebiomes/GMBViewer.htm";
+            InputStream inputStream = GiveMeBiomes.class.getResource(htmlPath).openStream();
+            ByteSink out = new ByteSink() {
+                public OutputStream openStream() throws IOException {
+                    return new FileOutputStream(t);
+                }
+            };
+            out.writeFrom(inputStream);
+            return t;
+        } catch (Throwable err) {
+            Logging.logError("Couldn\'t copy viewer html!", err);
+            return null;
         }
     }
 }
