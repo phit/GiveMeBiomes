@@ -196,7 +196,7 @@ public class BiomeColors {
                 color = 10326654;
                 break;
             case "Alps":
-                color = 6851218;
+                color = 12306635;
                 break;
             case "Bamboo Forest":
                 color = 6853246;
@@ -220,7 +220,7 @@ public class BiomeColors {
                 color = 16289679;
                 break;
             case "Cold Desert":
-                color = 12373377;
+                color = 15658734;
                 break;
             case "Coniferous Forest":
                 color = 5410656;
