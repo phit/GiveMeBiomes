@@ -1,0 +1,66 @@
+<html>
+<head>
+  <title>Give Me Biomes</title>
+  <link rel="stylesheet" href="assets/leaflet-0.7.3.css"/>
+  <script type="text/javascript" src="data/biomeids.json"></script>
+  <script type="text/javascript" src="data/mapinfo.json"></script>
+  <style>
+    #map{ height: 100%; width:100%; }
+    .leaflet-container .leaflet-control-mouseposition {
+      background-color: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 0 5px #bbb;
+      padding: 0 5px;
+      margin:0;
+      color: #333;
+      font: 11px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="tooltip"></div>
+  <div id="map"></div>
+  <script src="assets/leaflet-0.7.3.js"></script>
+  <script type="text/javascript" src="assets/L.SimpleGraticule.js"></script>
+  <script type="text/javascript" src="assets/L.Control.MousePosition.js"></script>
+  <script>
+    var tilesize = mapinfo.tileSize;
+    var xtiles = mapinfo.tilesx;
+    var ytiles = mapinfo.tilesy;
+    var originx = mapinfo.originx;
+    var originy = mapinfo.originy;
+    var scale = mapinfo.scale;
+ 
+    L.CRS.MySimple = L.extend({}, L.CRS.Simple, {
+        transformation: new L.Transformation(1 / (2 * scale),
+        tilesize * xtiles / 2 + ((originx * -1) * 2 * (1 / (2 * scale))),
+        -1 / (2 * scale),
+        tilesize * ytiles / 2 + ((originy * -1) * 2 * (1 / (2 * scale)))) 
+    });
+      
+    var map = L.map('map', {
+        crs: L.CRS.MySimple,
+        maxZoom: 0,
+        minZoom: 0,
+    }).setView([0,0],0);
+      
+    // load a tile layer
+    L.tileLayer('./data/tile_{x}_{y}.png', { 
+        noWrap: true,
+        continuousWorld: true,
+        tileSize: tilesize,
+        tms: false
+    }).addTo(map);
+      
+    L.simpleGraticule({
+        interval: 2048,
+        showOriginLabel: true,
+        redraw: 'move'
+    }).addTo(map);
+      
+    L.control.mousePosition({
+        lngFirst: false,
+        numDigits: 1
+    }).addTo(map);
+  </script>
+</body>
+</html>

@@ -23,7 +23,7 @@ public class GMBCore {
     public static void generate(BiomeProvider manager, String mapname, int scale, int originx, int originz, int width, int height, ICommandSender icommandsender) {
         int imagesx = (int)Math.ceil((double)width / (128.0D * (double)scale));
         int imagesy = (int)Math.ceil((double)height / (128.0D * (double)scale));
-        double progress = 0.0D;
+        double progress;
         int lastpercent = 0;
         File path = new File(GiveMeBiomes.savepath, mapname);
         File datapath = new File(path, "data");
@@ -32,12 +32,21 @@ public class GMBCore {
         }
 
         JsonObject info = new JsonObject();
-        info.addProperty("tileSize", Integer.valueOf(128));
-        info.addProperty("tilesx", Integer.valueOf(imagesx));
-        info.addProperty("tilesy", Integer.valueOf(imagesy));
-        info.addProperty("originx", Integer.valueOf(originx));
-        info.addProperty("originy", Integer.valueOf(originz));
-        info.addProperty("scale", Integer.valueOf(scale));
+        info.addProperty("tileSize", 128);
+        info.addProperty("tilesx", imagesx);
+        info.addProperty("tilesy", imagesy);
+        // this is needed since we only render full tiles
+        if(originx%2 == 0){
+            info.addProperty("originx", originx + width / 2);
+        } else {
+            info.addProperty("originx", originx + width / 2 + ((int)Math.ceil((double)scale/3) * 128));
+        }
+        if(originz%2 == 0){
+            info.addProperty("originy", originz + width / 2);
+        } else {
+            info.addProperty("originy", originz + width / 2 + ((int)Math.ceil((double)scale/3) * 128));
+        }
+        info.addProperty("scale", scale);
 
         try {
             FileWriter colours = new FileWriter(new File(datapath, "mapinfo.json"));
