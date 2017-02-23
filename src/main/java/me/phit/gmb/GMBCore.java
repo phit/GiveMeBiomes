@@ -100,7 +100,7 @@ public class GMBCore {
             path.mkdirs();
         }
 
-        writeFile(legendjson, path, "legend.json");
+        writeFile("legend=" + legendjson, path, "legend.json");
         return clist;
     }
 
