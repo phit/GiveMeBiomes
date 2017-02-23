@@ -3,18 +3,6 @@ package me.phit.gmb;
 import com.google.common.io.ByteSink;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.TreeMap;
-import javax.imageio.ImageIO;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.ClickEvent;
@@ -23,11 +11,18 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import org.apache.commons.io.FilenameUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Iterator;
+import java.util.TreeMap;
+
 public class GMBCore {
     public static void generate(BiomeProvider manager, String mapname, int scale, int radius, int originx, int originz, int width, int height, ICommandSender icommandsender) {
         File gmbpath = new File(GiveMeBiomes.savepath, mapname);
         File path = new File(gmbpath, "data");
-        if(!path.exists()) {
+        if (!path.exists()) {
             path.mkdirs();
         }
 
@@ -56,8 +51,8 @@ public class GMBCore {
         int[] pixels = new int[width * height];
         Biome[] biomeTemp = new Biome[1];
 
-        for(int y = 0; y < height; ++y) {
-            for(int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
                 Biome e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
                 pixels[y * width + x] = colors[Biome.getIdForBiome(e)];
             }
@@ -69,7 +64,7 @@ public class GMBCore {
         try {
             ImageIO.write(img, "png", new File(path, "map_0_0.png"));
         } catch (IOException err) {
-            Logging.logError("Image save failed", new Object[]{err});
+            Logging.logError("Saving image failed!", new Object[]{err});
         }
     }
 
@@ -78,8 +73,8 @@ public class GMBCore {
         TreeMap legend = new TreeMap();
         Iterator iter = Biome.REGISTRY.iterator();
 
-        while(iter.hasNext()) {
-            Biome biome = (Biome)iter.next();
+        while (iter.hasNext()) {
+            Biome biome = (Biome) iter.next();
             String name = biome.getBiomeName();
 
             int biomeid = Biome.getIdForBiome(biome);
@@ -96,7 +91,7 @@ public class GMBCore {
         }
 
         String legendjson = (new Gson()).toJson(legend);
-        if(!path.exists()) {
+        if (!path.exists()) {
             path.mkdirs();
         }
 
@@ -112,19 +107,20 @@ public class GMBCore {
             f.flush();
             f.close();
         } catch (IOException err) {
-            Logging.logError("Couldn\'t write: " + filename, new Object[]{err});
+            Logging.logError("Couldn't write: " + filename, new Object[]{err});
         }
 
     }
 
     private static void writeAssets(File path) {
+        /* first mkdirs is redundant since the second folder is deeper, but keeping it for clarity */
         File assetsp = new File(path, "assets");
-        if(!assetsp.exists()) {
+        if (!assetsp.exists()) {
             assetsp.mkdirs();
         }
 
         File imagesp = new File(assetsp, "images");
-        if(!imagesp.exists()) {
+        if (!imagesp.exists()) {
             imagesp.mkdirs();
         }
 
@@ -152,7 +148,7 @@ public class GMBCore {
             };
             out.writeFrom(inputStream);
         } catch (Throwable err) {
-            Logging.logError("Couldn\'t write asset: " + filename, new Object[]{err});
+            Logging.logError("Couldn't write asset: " + filename, new Object[]{err});
         }
 
     }

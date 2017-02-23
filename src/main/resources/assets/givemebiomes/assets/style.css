@@ -7,11 +7,20 @@
   font: 16px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
 
-.sidebar {
-    overflow-y: scroll;
+.map {
     height: 100%;
 }
 
-.map {
-    height: 100%;
+@media (min-width: 992px) {
+    .sidebar {
+        overflow-y: scroll;
+        height: 100%;
+    }
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        overflow-y: scroll;
+        height: 20%;
+    }
 }

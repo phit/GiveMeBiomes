@@ -54,7 +54,7 @@ public class GMBCommand extends CommandBase {
                         throw new WrongUsageException("Too many arguments!", new Object[0]);
                     }
 
-                    if(!StringUtils.isNumeric(arguments[1]) && !StringUtils.isNumeric(arguments[2]) && !StringUtils.isNumeric(arguments[3]) && !StringUtils.isNumeric(arguments[4])) {
+                    if (!StringUtils.isNumeric(arguments[1]) && !StringUtils.isNumeric(arguments[2]) && !StringUtils.isNumeric(arguments[3]) && !StringUtils.isNumeric(arguments[4])) {
                         throw new WrongUsageException("Scale, radius and center coords have to be numeric!", new Object[0]);
                     }
 
@@ -69,9 +69,9 @@ public class GMBCommand extends CommandBase {
     }
 
     private void executeCommand(ICommandSender sender, String name, int scale, int radius, int x, int z) throws WrongUsageException {
-        if(name.length() == 0) {
+        if (name.length() == 0) {
             throw new WrongUsageException("Invalid map name.", new Object[0]);
-        } else if(radius < 1 || scale < 1) {
+        } else if (radius < 1 || scale < 1) {
             throw new WrongUsageException("Invalid radius or scale.", new Object[0]);
         } else {
             GMBCore.generate(sender.getEntityWorld().getBiomeProvider(), name, scale, radius, x, z, radius * 2 / scale, radius * 2 / scale, sender);
