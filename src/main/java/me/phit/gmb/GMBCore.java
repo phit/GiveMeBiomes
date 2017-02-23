@@ -1,166 +1,159 @@
 package me.phit.gmb;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeProvider;
-
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.Iterator;
-import javax.imageio.ImageIO;
 import com.google.common.io.ByteSink;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.TreeMap;
+import javax.imageio.ImageIO;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.ClickEvent.Action;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProvider;
 import org.apache.commons.io.FilenameUtils;
 
-import static me.phit.gmb.BiomeColors.getMapColor;
-
 public class GMBCore {
-
-    public static void generate(BiomeProvider manager, String mapname, int scale, int originx, int originz, int width, int height, ICommandSender icommandsender) {
-        int imagesx = (int)Math.ceil((double)width / (128.0D * (double)scale));
-        int imagesy = (int)Math.ceil((double)height / (128.0D * (double)scale));
-        double progress;
-        int lastpercent = 0;
-        File path = new File(GiveMeBiomes.savepath, mapname);
-        File datapath = new File(path, "data");
-        if(!datapath.exists()) {
-            datapath.mkdirs();
+    public static void generate(BiomeProvider manager, String mapname, int scale, int radius, int originx, int originz, int width, int height, ICommandSender icommandsender) {
+        File gmbpath = new File(GiveMeBiomes.savepath, mapname);
+        File path = new File(gmbpath, "data");
+        if(!path.exists()) {
+            path.mkdirs();
         }
 
         JsonObject info = new JsonObject();
-        info.addProperty("tileSize", 128);
-        info.addProperty("tilesx", imagesx);
-        info.addProperty("tilesy", imagesy);
-        // this is needed since we only render full tiles
-        if(originx%2 == 0){
-            info.addProperty("originx", originx + width / 2);
-        } else {
-            info.addProperty("originx", originx + width / 2 + ((int)Math.ceil((double)scale/3) * 128));
-        }
-        if(originz%2 == 0){
-            info.addProperty("originy", originz + width / 2);
-        } else {
-            info.addProperty("originy", originz + width / 2 + ((int)Math.ceil((double)scale/3) * 128));
-        }
+        info.addProperty("width", width);
+        info.addProperty("height", height);
+        info.addProperty("originx", originx);
+        info.addProperty("originy", originz);
         info.addProperty("scale", scale);
+        info.addProperty("radius", radius);
 
-        try {
-            FileWriter colours = new FileWriter(new File(datapath, "mapinfo.json"));
-            colours.write("mapinfo = " + info.toString());
-            colours.flush();
-            colours.close();
-        } catch (IOException err) {
-            Logging.logError("Couldn\'t write mapinfo.json!", err);
-        }
+        writeFile("mapinfo = " + info.toString(), path, "mapinfo.json");
+        int[] colors = generateColors(path);
 
-        int[] colours = generateLists(datapath);
-        icommandsender.sendMessage(new TextComponentString("Beginning render of " + imagesx * imagesy + " tiles covering a " + width + " by " + height + " block area."));
+        icommandsender.sendMessage(new TextComponentString("Beginning render of map with 1:" + scale + " scale covering a " + radius * 2 + "x" + radius * 2 + " block area."));
+        generateMap(manager, colors, scale, radius, originx, originz, width, height, path);
 
-        for(int y = 0; y < imagesy; ++y) {
-            for(int x = 0; x < imagesx; ++x) {
-                generateTile(manager, colours, scale, originx + x * 128 * scale, originz + y * 128 * scale, 128, 128, datapath, "tile_" + x + "_" + y);
-                progress = (double)(y * imagesx + x) / (double)(imagesx * imagesy) * 100.0D;
-                if(Math.floor(progress) > (double)lastpercent) {
-                    lastpercent = (int)Math.floor(progress);
-                    Logging.logInfo("Progress: " + lastpercent + "%");
-                }
-            }
-        }
-        putViewer(path);
-        ITextComponent itextcomponent = new TextComponentString("Success! Click here to open your map " + "\"" + mapname + "\"");
-        itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, FilenameUtils.normalize(path.getAbsolutePath() + File.separator + "GMBViewer.htm")));
+        writeAssets(gmbpath);
+
+        TextComponentString itextcomponent = new TextComponentString("Success! Click here to open your map \"" + mapname + "\"");
+        itextcomponent.getStyle().setClickEvent(new ClickEvent(Action.OPEN_FILE, FilenameUtils.normalize(gmbpath.getAbsolutePath() + File.separator + "index.html")));
         icommandsender.sendMessage(itextcomponent);
     }
 
-    private static void generateTile(BiomeProvider manager, int[] colours, int scale, int originx, int originz, int width, int height, File path, String name) {
+    private static void generateMap(BiomeProvider manager, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
         int[] pixels = new int[width * height];
-        int[] biomeids = new int[width * height];
-        Biome[] biometemp = new Biome[1];
+        Biome[] biomeTemp = new Biome[1];
 
-        for(int img = 0; img < height; ++img) {
-            for(int json = 0; json < width; ++json) {
-                Biome e = manager.getBiomesForGeneration(biometemp, originx + json * scale, originz + img * scale, 1, 1)[0];
-                pixels[img * width + json] = colours[e.getIdForBiome(e)];
-                biomeids[img * width + json] = e.getIdForBiome(e);
+        for(int y = 0; y < height; ++y) {
+            for(int x = 0; x < width; ++x) {
+                Biome e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
+                pixels[y * width + x] = colors[Biome.getIdForBiome(e)];
             }
         }
 
         BufferedImage img = new BufferedImage(width, height, 1);
         img.setRGB(0, 0, width, height, pixels, 0, width);
-        String biomeidsjson = (new Gson()).toJson(biomeids);
 
         try {
-            ImageIO.write(img, "png", new File(path, name + ".png"));
+            ImageIO.write(img, "png", new File(path, "map_0_0.png"));
         } catch (IOException err) {
-            Logging.logError("Image save failed", err);
+            Logging.logError("Image save failed", new Object[]{err});
         }
-
-        try {
-            FileWriter idsfile = new FileWriter(new File(path, name + ".json"));
-            idsfile.write("mapdata[\'" + name + "\'] = " + biomeidsjson + ";");
-            idsfile.flush();
-            idsfile.close();
-        } catch (IOException err) {
-            Logging.logError("Couldn\'t write mapdata json for tile" + name, err);
-        }
-
     }
 
-    private static int[] generateLists(File path) {
+    private static int[] generateColors(File path) {
         int[] clist = new int[512];
-        String[] namelist = new String[512];
+        TreeMap legend = new TreeMap();
+        Iterator iter = Biome.REGISTRY.iterator();
 
-        Iterator<Biome> iter = Biome.REGISTRY.iterator();
-        while (iter.hasNext())
-        {
-            Biome biome = iter.next();
-            int id = Biome.getIdForBiome(biome);
+        while(iter.hasNext()) {
+            Biome biome = (Biome)iter.next();
             String name = biome.getBiomeName();
 
-            int bcolor = getMapColor(name);
+            int biomeid = Biome.getIdForBiome(biome);
+            int bcolor = BiomeColors.getMapColor(name);
 
-            clist[id] = bcolor;
-            namelist[id] = name;
+            clist[biomeid] = bcolor;
+
+            Color color = new Color(bcolor);
+            int red = color.getRed();
+            int green = color.getGreen();
+            int blue = color.getBlue();
+
+            legend.put(name, red + "," + green + "," + blue);
         }
 
-        String namelistjson = (new Gson()).toJson(namelist);
+        String legendjson = (new Gson()).toJson(legend);
         if(!path.exists()) {
             path.mkdirs();
         }
 
-        File filepath = new File(path, "biomeids.json");
-
-        try {
-            FileWriter e = new FileWriter(filepath);
-            e.write("biomeids = " + namelistjson);
-            e.flush();
-            e.close();
-        } catch (IOException err) {
-            Logging.logError("Couldn\'t write biomeids.json", err);
-            return null;
-        }
+        writeFile(legendjson, path, "legend.json");
         return clist;
     }
 
-    public static File putViewer(File path) {
+    private static void writeFile(String data, File path, String filename) {
         try {
-            final File t = new File(path, "GMBViewer.htm");
-            String htmlPath = "/assets/givemebiomes/GMBViewer.htm";
-            InputStream inputStream = GiveMeBiomes.class.getResource(htmlPath).openStream();
+            File err = new File(path, filename);
+            FileWriter f = new FileWriter(err);
+            f.write(data);
+            f.flush();
+            f.close();
+        } catch (IOException err) {
+            Logging.logError("Couldn\'t write: " + filename, new Object[]{err});
+        }
+
+    }
+
+    private static void writeAssets(File path) {
+        File assetsp = new File(path, "assets");
+        if(!assetsp.exists()) {
+            assetsp.mkdirs();
+        }
+
+        File imagesp = new File(assetsp, "images");
+        if(!imagesp.exists()) {
+            imagesp.mkdirs();
+        }
+
+        writeAsset(path, "index.html");
+        writeAsset(path, "assets/style.css");
+        writeAsset(path, "assets/leaflet-1.0.3.css");
+        writeAsset(path, "assets/leaflet-1.0.3.js");
+        writeAsset(path, "assets/L.Control.MousePosition.js");
+        writeAsset(path, "assets/L.ImageOverlay.PixelFilter.js");
+        writeAsset(path, "assets/images/layers.png");
+        writeAsset(path, "assets/images/layers-2x.png");
+        writeAsset(path, "assets/images/marker-icon.png");
+        writeAsset(path, "assets/images/marker-icon-2x.png");
+        writeAsset(path, "assets/images/marker-shadow.png");
+    }
+
+    private static void writeAsset(File path, String filename) {
+        try {
+            final File asset = new File(path, filename);
+            InputStream inputStream = GiveMeBiomes.class.getResource("/assets/givemebiomes/" + filename).openStream();
             ByteSink out = new ByteSink() {
                 public OutputStream openStream() throws IOException {
-                    return new FileOutputStream(t);
+                    return new FileOutputStream(asset);
                 }
             };
             out.writeFrom(inputStream);
-            return t;
         } catch (Throwable err) {
-            Logging.logError("Couldn\'t copy viewer html!", err);
-            return null;
+            Logging.logError("Couldn\'t write asset: " + filename, new Object[]{err});
         }
+
     }
 }

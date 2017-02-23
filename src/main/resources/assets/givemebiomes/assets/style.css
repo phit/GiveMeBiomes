@@ -1,0 +1,17 @@
+.leaflet-container .leaflet-control-mouseposition {
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 5px #000;
+  padding: 0 5px;
+  margin: 30px;
+  color: #fff;
+  font: 16px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.sidebar {
+    overflow-y: scroll;
+    height: 100%;
+}
+
+.map {
+    height: 100%;
+}

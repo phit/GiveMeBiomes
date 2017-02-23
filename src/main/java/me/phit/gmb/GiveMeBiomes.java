@@ -9,12 +9,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = GiveMeBiomes.MODID, name = GiveMeBiomes.MODNAME, version = GiveMeBiomes.MODVERSION, dependencies = "required-after:Forge@[11.16.0.1865,)", useMetadata = true)
+@Mod(modid = GiveMeBiomes.MODID, name = GiveMeBiomes.MODNAME, version = GiveMeBiomes.MODVERSION, dependencies = "required-after:Forge@[11.16.0.1865,)", acceptableRemoteVersions = "*")
 public class GiveMeBiomes {
 
     public static final String MODID = "givemebiomes";
     public static final String MODNAME = "GiveMeBiomes";
-    public static final String MODVERSION = "1.2.0pre2";
+    public static final String MODVERSION = "1.2.0pre3";
 
     public static File savepath;
 
