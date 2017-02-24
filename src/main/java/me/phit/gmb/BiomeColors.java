@@ -381,6 +381,50 @@ public class BiomeColors {
             case "Flower Island":
                 color = 4438851;
                 break;
+            // Integrated Dynamics
+            case "Meneglin":
+                color = 12185266;
+                break;
+            // AbyssalCraft
+            case "Abyssal Wastelands":
+                color = 2242835;
+                break;
+            case "Coralium Infested Swamp":
+                color = 4164992;
+                break;
+            case "Dark Realm":
+                color = 1578008;
+                break;
+            case "Darklands":
+                color = 794678;
+                break;
+            case "Darklands Forest":
+                color = 1648720;
+                break;
+            case "Darklands Highland":
+                color = 3030351;
+                break;
+            case "Darklands Mountains":
+                color = 3688540;
+                break;
+            case "Darklands Plains":
+                color = 663093;
+                break;
+            case "Dreadlands":
+                color = 4588547;
+                break;
+            case "Dreadlands Forest":
+                color = 5902865;
+                break;
+            case "Dreadlands Mountains":
+                color = 7885136;
+                break;
+            case "Omothol":
+                color = 599561;
+                break;
+            case "Purified Dreadlands":
+                color = 4002105;
+                break;
             default: // do nothing;
                 break;
         }
