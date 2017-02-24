@@ -8,12 +8,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = GiveMeBiomes.MODID, name = GiveMeBiomes.MODNAME, version = GiveMeBiomes.MODVERSION, dependencies = "required-after:Forge@[11.16.0.1865,)", acceptableRemoteVersions = "*")
+@Mod(modid = GiveMeBiomes.MODID, name = GiveMeBiomes.MODNAME, version = GiveMeBiomes.MODVERSION, acceptableRemoteVersions = "*")
 public class GiveMeBiomes {
 
     public static final String MODID = "givemebiomes";
     public static final String MODNAME = "GiveMeBiomes";
-    public static final String MODVERSION = "2.0.2";
+    public static final String MODVERSION = "1.11.2-2.0.2";
 
     public static File savepath;
 
