@@ -76,8 +76,8 @@ L.TileLayer.PixelFilter = L.TileLayer.extend({
         if (imgelement.getAttribute('data-PixelFilterDone')) return;
 
         // copy the image data onto a canvas for manipulation
-        var width  = mapinfo.width * 2 / mapinfo.scale;
-        var height = mapinfo.height * 2 / mapinfo.scale;
+        var width  = mapinfo.width;
+        var height = mapinfo.height;
         var canvas    = document.createElement("canvas");
         canvas.width  = width;
         canvas.height = height;
