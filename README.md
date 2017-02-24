@@ -1,4 +1,4 @@
-# GiveMeBiomes ![curse downloads](http://cf.way2muchnoise.eu/versions/Downloads_261493_all.svg)
+# GiveMeBiomes [![curse downloads](http://cf.way2muchnoise.eu/versions/Downloads_261493_all.svg)](https://minecraft.curseforge.com/projects/give-me-biomes)
 A 1.10 remake of the abandoned biome mapping tool Pioneer Terrain Survey, should work with all Forge mods adding biomes.
 Recommended to run on a client not server, during the generation the game will freeze!
 
