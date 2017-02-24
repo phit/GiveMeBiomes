@@ -32,6 +32,14 @@ L.TileLayer.PixelFilter = L.TileLayer.extend({
         });
     },
 
+    // extend the _createTile function to add the .crossOrigin attribute, since loading tiles from a separate service is a pretty common need
+    // and the Canvas is paranoid about cross-domain image data. see issue #5
+    _createTile: function () {
+        var tile = L.TileLayer.prototype._createTile.call(this);
+        tile.crossOrigin = "Anonymous";
+        return tile;
+    },
+
     // settings setters
     setMatchRGBA: function (rgba) {
         // save the setting
@@ -68,8 +76,8 @@ L.TileLayer.PixelFilter = L.TileLayer.extend({
         if (imgelement.getAttribute('data-PixelFilterDone')) return;
 
         // copy the image data onto a canvas for manipulation
-        var width  = mapinfo.width * 2 / mapinfo.scale;
-        var height = mapinfo.height * 2 / mapinfo.scale;
+        var width  = mapinfo.width;
+        var height = mapinfo.height;
         var canvas    = document.createElement("canvas");
         canvas.width  = width;
         canvas.height = height;
