@@ -8,10 +8,9 @@
     "url": "",
     "updateUrl": "",
     "authorList": [
-      "phit",
-      "TTFTCUTS"
+      "phit"
     ],
-    "credits": "Original 1.6.4 version by Alex 'TTFTCUTS' Spinks, updated to 1.10 by phit",
+    "credits": "Idea by 'TTFTCUTS' with Pioneer Terrain Survey, recreated and updated by 'phit'",
     "logoFile": "",
     "screenshots": [],
     "dependencies": []
