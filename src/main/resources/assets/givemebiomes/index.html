@@ -38,9 +38,9 @@
     L.CRS.MySimple = L.extend({}, L.CRS.Simple, {
         transformation: new L.Transformation(
             1 / scale * scale,
-            originx * -1 / 2 * scale + radius / scale * scale,
+            originx * -1 / scale * scale + radius / scale * scale,
             -1 / scale * scale,
-            originy * -1 / 2 * scale + radius / scale * scale
+            originy * -1 / scale * scale + radius / scale * scale
         )
     });
 
@@ -50,7 +50,7 @@
         maxZoom: 0,
         minZoom: 0,
         zoomControl: false
-    }).setView([originx*-1,originy],0);
+    }).setView([originy*-1,originx],0);
     
     // map max size so we don't have 404's
     var mapbounds = [
