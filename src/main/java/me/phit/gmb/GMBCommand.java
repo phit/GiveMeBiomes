@@ -3,9 +3,8 @@ package me.phit.gmb;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChunkCoordinates;
 import org.apache.commons.lang3.StringUtils;
 
 public class GMBCommand extends CommandBase {
@@ -13,22 +12,22 @@ public class GMBCommand extends CommandBase {
         return 4;
     }
 
-    public String getName() {
+    public String getCommandName() {
         return "gmb";
     }
 
-    public String getUsage(ICommandSender sender) {
+    public String getCommandUsage(ICommandSender sender) {
         return "/gmb <mapname> [<scale> <radius>] [<centrex> <centrez>]";
     }
 
-    public void execute(MinecraftServer server, ICommandSender sender, String[] arguments) throws WrongUsageException {
+    public void processCommand(ICommandSender sender, String[] arguments) throws WrongUsageException {
         if (arguments.length == 0) {
-            sender.sendMessage(new TextComponentString("Syntax: " + this.getUsage(sender)));
+            sender.addChatMessage(new ChatComponentText("Syntax: " + this.getCommandUsage(sender)));
         } else {
-            BlockPos pos;
+            ChunkCoordinates pos;
             if (arguments.length == 1) {
-                pos = sender.getCommandSenderEntity().getPosition();
-                this.executeCommand(sender, arguments[0], 1, 512, pos.getX(), pos.getZ());
+                pos = sender.getPlayerCoordinates();
+                this.executeCommand(sender, arguments[0], 1, 512, pos.posX, pos.posZ);
             } else {
                 if (arguments.length == 2) {
                     throw new WrongUsageException("Not enough arguments.", new Object[0]);
@@ -40,8 +39,8 @@ public class GMBCommand extends CommandBase {
                     }
 
                     if (arguments[1].equals("1") || arguments[1].equals("2")) {
-                        pos = sender.getCommandSenderEntity().getPosition();
-                        this.executeCommand(sender, arguments[0], Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]), pos.getX(), pos.getZ());
+                        pos = sender.getPlayerCoordinates();
+                        this.executeCommand(sender, arguments[0], Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]), pos.posX, pos.posZ);
                     } else {
                         throw new WrongUsageException("Scale can only be 1 or 2!", new Object[0]);
                     }
@@ -74,7 +73,7 @@ public class GMBCommand extends CommandBase {
         } else if (radius < 1 || scale < 1) {
             throw new WrongUsageException("Invalid radius or scale.", new Object[0]);
         } else {
-            GMBCore.generate(sender.getEntityWorld().getBiomeProvider(), name, scale, radius, x, z, radius * 2 / scale, radius * 2 / scale, sender);
+            GMBCore.generate(sender.getEntityWorld().getWorldChunkManager(), name, scale, radius, x, z, radius * 2 / scale, radius * 2 / scale, sender);
         }
     }
 }

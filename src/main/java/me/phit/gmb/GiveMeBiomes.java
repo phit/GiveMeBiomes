@@ -1,19 +1,19 @@
 package me.phit.gmb;
 
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = GiveMeBiomes.MODID, name = GiveMeBiomes.MODNAME, version = GiveMeBiomes.MODVERSION, dependencies = "required-after:Forge@[11.16.0.1865,)", acceptableRemoteVersions = "*")
+@Mod(modid = GiveMeBiomes.MODID, name = GiveMeBiomes.MODNAME, version = GiveMeBiomes.MODVERSION, acceptableRemoteVersions = "*")
 public class GiveMeBiomes {
 
     public static final String MODID = "givemebiomes";
     public static final String MODNAME = "GiveMeBiomes";
-    public static final String MODVERSION = "2.0.2";
+    public static final String MODVERSION = "1.7.10-2.0.2";
 
     public static File savepath;
 

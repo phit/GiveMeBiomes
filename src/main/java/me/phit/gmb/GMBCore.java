@@ -4,22 +4,20 @@ import com.google.common.io.ByteSink;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.ClickEvent.Action;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeProvider;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.WorldChunkManager;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Iterator;
 import java.util.TreeMap;
 
 public class GMBCore {
-    public static void generate(BiomeProvider manager, String mapname, int scale, int radius, int originx, int originz, int width, int height, ICommandSender icommandsender) {
+    public static void generate(WorldChunkManager manager, String mapname, int scale, int radius, int originx, int originz, int width, int height, ICommandSender icommandsender) {
         File gmbpath = new File(GiveMeBiomes.savepath, mapname);
         File path = new File(gmbpath, "data");
         if (!path.exists()) {
@@ -37,24 +35,24 @@ public class GMBCore {
         writeFile("mapinfo = " + info.toString(), path, "mapinfo.json");
         int[] colors = generateColors(path);
 
-        icommandsender.sendMessage(new TextComponentString("Beginning render of map with 1:" + scale + " scale covering a " + radius * 2 + "x" + radius * 2 + " block area."));
+        icommandsender.addChatMessage(new ChatComponentText("Beginning render of map with 1:" + scale + " scale covering a " + radius * 2 + "x" + radius * 2 + " block area."));
         generateMap(manager, colors, scale, radius, originx, originz, width, height, path);
 
         writeAssets(gmbpath);
 
-        TextComponentString itextcomponent = new TextComponentString("Success! Click here to open your map \"" + mapname + "\"");
-        itextcomponent.getStyle().setClickEvent(new ClickEvent(Action.OPEN_FILE, FilenameUtils.normalize(gmbpath.getAbsolutePath() + File.separator + "index.html")));
-        icommandsender.sendMessage(itextcomponent);
+        ChatComponentText itextcomponent = new ChatComponentText("Success! Click here to open your map \"" + mapname + "\"");
+        itextcomponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, FilenameUtils.normalize(gmbpath.getAbsolutePath() + File.separator + "index.html")));
+        icommandsender.addChatMessage(itextcomponent);
     }
 
-    private static void generateMap(BiomeProvider manager, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
+    private static void generateMap(WorldChunkManager manager, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
         int[] pixels = new int[width * height];
-        Biome[] biomeTemp = new Biome[1];
+        BiomeGenBase[] biomeTemp = new BiomeGenBase[1];
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                Biome e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
-                pixels[y * width + x] = colors[Biome.getIdForBiome(e)];
+                BiomeGenBase e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
+                pixels[y * width + x] = colors[e.biomeID];
             }
         }
 
@@ -71,23 +69,22 @@ public class GMBCore {
     private static int[] generateColors(File path) {
         int[] clist = new int[512];
         TreeMap legend = new TreeMap();
-        Iterator iter = Biome.REGISTRY.iterator();
 
-        while (iter.hasNext()) {
-            Biome biome = (Biome) iter.next();
-            String name = biome.getBiomeName();
+        for(int json = 0; json < 256; ++json) {
+            if(BiomeGenBase.getBiomeGenArray()[json] != null) {
+                int bcolor = BiomeGenBase.getBiomeGenArray()[json].color;
+                String name = BiomeGenBase.getBiomeGenArray()[json].biomeName;
+                clist[json] = bcolor;
 
-            int biomeid = Biome.getIdForBiome(biome);
-            int bcolor = BiomeColors.getMapColor(name);
+                Color color = new Color(bcolor);
+                int red = color.getRed();
+                int green = color.getGreen();
+                int blue = color.getBlue();
 
-            clist[biomeid] = bcolor;
-
-            Color color = new Color(bcolor);
-            int red = color.getRed();
-            int green = color.getGreen();
-            int blue = color.getBlue();
-
-            legend.put(name, red + "," + green + "," + blue);
+                legend.put(name, red + "," + green + "," + blue);
+            } else {
+                clist[json] = 0;
+            }
         }
 
         String legendjson = (new Gson()).toJson(legend);
