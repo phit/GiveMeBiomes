@@ -1,0 +1,98 @@
+<html>
+<head>
+    <title>GiveMeBiomes Demo 1</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/leaflet-1.0.3.css"/>
+    <link rel="stylesheet" href="assets/style.css"/>
+    <script type="text/javascript" src="data/mapinfo.json"></script>
+    <script type="text/javascript" src="data/legend.json"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 sidebar">
+            <h4>Biomes</h4>
+            <ul id="biomelist">
+                <li><a href="javascript:void(0);" onClick="overlay.setPixelCodes([]);">All Biomes</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9 map" id="map">
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="assets/leaflet-1.0.3.js"></script>
+<script type="text/javascript" src="assets/L.ImageOverlay.PixelFilter.js"></script>
+<script type="text/javascript" src="assets/L.Control.MousePosition.js"></script>
+<script>
+    var width = mapinfo.width;
+    var height = mapinfo.height;
+    var originx = mapinfo.originx;
+    var originy = mapinfo.originy;
+    var scale = mapinfo.scale;
+    var radius = mapinfo.radius;
+    
+    // set custom scale and center
+    L.CRS.MySimple = L.extend({}, L.CRS.Simple, {
+        transformation: new L.Transformation(
+            1 / scale * scale,
+            originx * -1 / scale * scale + radius / scale * scale,
+            -1 / scale * scale,
+            originy * -1 / scale * scale + radius / scale * scale
+        )
+    });
+
+    // init our map
+    var map = L.map('map', {
+        crs: L.CRS.MySimple,
+        maxZoom: 0,
+        minZoom: 0,
+        zoomControl: false
+    }).setView([originy*-1,originx],0);
+    
+    // map max size so we don't have 404's
+    var mapbounds = [
+        [(radius * -1) + (originy * -1), (radius * -1) + originx],
+        [radius + (originy * -1), radius + originx]
+    ];
+    
+    // main map layer
+    var mainmap = L.tileLayerPixelFilter('./data/map_{x}_{y}.png', {
+        noWrap: true,
+        continuousWorld: true,
+        tileSize: radius * 2,
+        attribution: 'Rendered with <a href="https://github.com/phit/GiveMeBiomes/">GiveMeBiomes</a>',
+        bounds: mapbounds
+    }).addTo(map);
+
+    // overlay map layer
+    var overlay = L.tileLayerPixelFilter('./data/map_{x}_{y}.png', {
+        noWrap: true,
+        continuousWorld: true,
+        tileSize: radius * 2,
+        matchRGBA: null,
+        missRGBA:  [ 0, 0, 0, 200 ],
+        bounds: mapbounds
+    }).addTo(map);
+    
+    // mouse coordinates
+    L.control.mousePosition({
+        numDigits: 1,
+        position: "topright"
+    }).addTo(map);
+</script>
+<script>
+    var ul = document.getElementById('biomelist')
+    for (var key in legend) {
+        if (legend.hasOwnProperty(key)) {
+            // console.log(key + " -> " + legend[key]);
+            var li=document.createElement('li');
+            li.innerHTML = "<a href='javascript:void(0);' onClick='overlay.setPixelCodes([ ["+legend[key]+"] ]);'>"+key+"</a>";   // Use innerHTML to set the text
+            ul.appendChild(li);
+        }
+    }
+</script>
+</body>
+</html>
