@@ -89,7 +89,7 @@
         if (legend.hasOwnProperty(key)) {
             // console.log(key + " -> " + legend[key]);
             var li=document.createElement('li');
-            li.innerHTML = "<a href='javascript:void(0);' onClick='overlay.setPixelCodes([ ["+legend[key]+"] ]);'>"+key+"</a>";   // Use innerHTML to set the text
+            li.innerHTML = "<a href='javascript:void(0);' onClick='overlay.setPixelCodes([ ["+legend[key]+"] ]);'>"+key+"</a><div class=\"color\" style=\"background-color:rgb("+legend[key]+")\"></div>";
             ul.appendChild(li);
         }
     }
