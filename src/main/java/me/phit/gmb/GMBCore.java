@@ -50,11 +50,18 @@ public class GMBCore {
     private static void generateMap(BiomeProvider manager, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
         int[] pixels = new int[width * height];
         Biome[] biomeTemp = new Biome[1];
+        int lastpercent = 0;
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 Biome e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
                 pixels[y * width + x] = colors[Biome.getIdForBiome(e)];
+
+                double progress = (double)(y * width + x) / (double)(height * width) * 100.0D;
+                if(Math.floor(progress) > (double)lastpercent) {
+                    lastpercent = (int)Math.floor(progress);
+                    Logging.logInfo("Progress: " + lastpercent + "%");
+                }
             }
         }
 
