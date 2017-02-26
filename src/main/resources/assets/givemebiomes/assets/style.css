@@ -24,3 +24,11 @@
         height: 20%;
     }
 }
+
+.color {
+    width: 12px;
+    display: inline-block;
+    height: 12px;
+    margin-left: 4px;
+    border: solid 1px #333;
+}
