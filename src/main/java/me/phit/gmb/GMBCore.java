@@ -46,6 +46,8 @@ public class GMBCore {
     }
 
     private static void generateMap(WorldChunkManager manager, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
+        double progress = 0.0D;
+        int lastpercent = 0;
         int[] pixels = new int[width * height];
         BiomeGenBase[] biomeTemp = new BiomeGenBase[1];
 
@@ -53,6 +55,11 @@ public class GMBCore {
             for (int x = 0; x < width; ++x) {
                 BiomeGenBase e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
                 pixels[y * width + x] = colors[e.biomeID];
+                progress = (double)(y * width + x) / (double)(height * width) * 100.0D;
+                if(Math.floor(progress) > (double)lastpercent) {
+                    lastpercent = (int)Math.floor(progress);
+                    Logging.logInfo("Progress: " + lastpercent + "%");
+                }
             }
         }
 
