@@ -13,7 +13,7 @@ public class GiveMeBiomes {
 
     public static final String MODID = "givemebiomes";
     public static final String MODNAME = "GiveMeBiomes";
-    public static final String MODVERSION = "2.0.3";
+    public static final String MODVERSION = "2.1.0";
 
     public static File savepath;
 
