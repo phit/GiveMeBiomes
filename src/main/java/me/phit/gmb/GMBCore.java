@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 public class GMBCore {
-    public static void generate(BiomeProvider manager, String mapname, int scale, int radius, int originx, int originz, int width, int height, ICommandSender icommandsender) {
+    public static void generate(BiomeProvider provider, String mapname, int scale, int radius, int originx, int originz, int width, int height, ICommandSender icommandsender) {
         File gmbpath = new File(GiveMeBiomes.savepath, mapname);
         File path = new File(gmbpath, "data");
         if (!path.exists()) {
@@ -38,7 +38,8 @@ public class GMBCore {
         int[] colors = generateColors(path);
 
         icommandsender.sendMessage(new TextComponentString("Beginning render of map with 1:" + scale + " scale covering a " + radius * 2 + "x" + radius * 2 + " block area."));
-        generateMap(manager, colors, scale, radius, originx, originz, width, height, path);
+
+        generateMap(provider, colors, scale, radius, originx, originz, width, height, path);
 
         writeAssets(gmbpath);
 
@@ -47,15 +48,15 @@ public class GMBCore {
         icommandsender.sendMessage(itextcomponent);
     }
 
-    private static void generateMap(BiomeProvider manager, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
+    private static void generateMap(BiomeProvider provider, int[] colors, int scale, int radius, int originx, int originz, int width, int height, File path) {
         int[] pixels = new int[width * height];
-        Biome[] biomeTemp = new Biome[1];
+        Biome[] biome = new Biome[1];
         int lastpercent = 0;
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                Biome e = manager.getBiomesForGeneration(biomeTemp, originx - radius + x * scale, originz - radius + y * scale, 1, 1)[0];
-                pixels[y * width + x] = colors[Biome.getIdForBiome(e)];
+                provider.getBiomes(biome, originx - radius + x * scale, originz - radius + y * scale, 1, 1);
+                pixels[y * width + x] = colors[Biome.getIdForBiome(biome[0])];
 
                 double progress = (double)(y * width + x) / (double)(height * width) * 100.0D;
                 if(Math.floor(progress) > (double)lastpercent) {
